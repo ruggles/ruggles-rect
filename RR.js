@@ -26,12 +26,16 @@ function drawBackground(color) {
 
 // Testing & Debug Functions
 function testDraw() {
-    game.testTile.draw(50, 50);
+    game.testInt.draw(50, 50);
+    game.testEdge.draw(50, 50);
 }
 
 function testInit() {
-    game.testTile = new game.Internal('white', 'yellow');
-    console.log("game.testTile Initiated");
+    game.testInt = new game.Internal('white', 'yellow');
+    console.log("game.testInt Initiated");
+
+    game.testEdge = new game.Edge('red', 'up');
+    console.log("game.testEdge Initiated");
 }
 
 // --- Main Loop ---
@@ -101,11 +105,79 @@ game.Internal.prototype.flip = function () {
     this.altColor = colorHolder;
 }   
 
+// Edge Object - child of Tile
+game.Edge = function(color, direction) {
+    game.Tile.call(this, color);
+
+    //orientation can be either 
+    //'up', 'down', 'left', or 'right'
+    this.direction = direction;
+
+    this.buildRect();
+}
+
+game.Edge.prototype = Object.create(game.Tile.prototype);
+game.Edge.prototype.constructor = game.Edge;
+
+game.Edge.prototype.buildRect = function() {
+    if (this.direction == 'left' || this.direction == 'right') {
+        var width = game.EDGE_THICKNESS;
+        var height = game.EDGE_LENGTH;
+        var adjY = 0;
+        if (this.direction == 'left') {
+            var adjX = (game.INTERNAL_WIDTH/2 + game.EDGE_PADDING);
+        } else {
+            var adjX = -(game.INTERNAL_WIDTH/2 + game.EDGE_PADDING);
+        }
+
+    }
+    if (this.direction == 'up' || this.direction == 'down') {
+        var height = game.EDGE_THICKNESS;
+        var width = game.EDGE_LENGTH;
+        var adjX = 0;
+        if (this.direction == 'up') {
+            var adjY = (game.INTERNAL_HEIGHT/2 + game.EDGE_PADDING);
+        } else {
+            var adjY = -(game.INTERNAL_HEIGHT/2 + game.EDGE_PADDING);
+        }
+    }
+ 
+    var centerX = -game.INTERNAL_WIDTH/2;
+    var centerY = -game.INTERNAL_HEIGHT/2;
+
+    var x = centerX + width/2 + adjX;
+    var y = centerY + height/2 + adjY;
+
+    this.rect = {
+        x: x,
+        y: y,
+        width: width,
+        height: height
+    };    
+}
+
+game.Edge.prototype.flip = function() {
+    if (this.direction == 'up')
+        this.direction = 'down';
+    else if (this.direction == 'down')
+        this.direction = 'up';
+    else if (this.direction == 'left')
+        this.direction = 'right';
+    else 
+        this.direction = 'left';
+
+    this.buildRect();
+}
+
 // --- Initialize variables ---
 game.BG_COLOR = 'black';
 
 game.INTERNAL_WIDTH = 40;
 game.INTERNAL_HEIGHT = 40;
+
+game.EDGE_LENGTH = 40;
+game.EDGE_THICKNESS = 5;
+game.EDGE_PADDING = 10;
 
 // Game Canvas
 game.canvas = document.getElementById('gameCanvas');
