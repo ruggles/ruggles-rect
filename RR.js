@@ -13,7 +13,6 @@
 // Drawing Functions
 function render(){
     drawBackground(game.BG_COLOR);
-    game.testTile.draw(50, 50);
 }
 
 function drawRect(color, x, y, width, height) {
@@ -23,6 +22,16 @@ function drawRect(color, x, y, width, height) {
 
 function drawBackground(color) {
     drawRect(color, 0, 0, game.canvas.width, game.canvas.height);
+}
+
+// Testing & Debug Functions
+function testDraw() {
+    game.testTile.draw(50, 50);
+}
+
+function testInit() {
+    game.testTile = new game.Internal('white', 'yellow');
+    console.log("game.testTile Initiated");
 }
 
 // --- Main Loop ---
@@ -39,6 +48,10 @@ function gameLoop() {
 
     // --- Render ---
     render();
+
+
+    // Testing
+    testDraw();
 }
 
 //  --- window.onload ---
@@ -61,9 +74,15 @@ game.Tile.prototype.draw = function (canvasX,canvasY) {
     drawRect(this.color, x, y, this.rect.width, this.rect.height);
 }
 
+game.Tile.prototype.collide = function (relX, relY) {
+    // Currently a placeholder, will add later
+    // Returns true if relX, relY within rect
+}
+
 // Internal object - child of Tile
-game.Internal = function (color) {
+game.Internal = function (color, altColor) {
     game.Tile.call(this, color);
+    this.altColor = altColor;
 
     this.rect = {
     x: 0,
@@ -76,18 +95,26 @@ game.Internal = function (color) {
 game.Internal.prototype = Object.create(game.Tile.prototype);
 game.Internal.prototype.constructor = game.Internal;
 
+game.Internal.prototype.flip = function () {
+    var colorHolder = this.color;
+    this.color = this.altColor;
+    this.altColor = colorHolder;
+}   
+
 // --- Initialize variables ---
 game.BG_COLOR = 'black';
 
-game.INTERNAL_WIDTH = 10;
-game.INTERNAL_HEIGHT = 10;
+game.INTERNAL_WIDTH = 40;
+game.INTERNAL_HEIGHT = 40;
 
 // Game Canvas
 game.canvas = document.getElementById('gameCanvas');
 game.canvasContext = game.canvas.getContext('2d');
 
 // Initialize Objects
-game.testTile = new game.Internal('white');
+
+// Testing
+testInit();
 
 // --- Run Main Loop ---
 
