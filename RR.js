@@ -9,6 +9,23 @@
 
 
 // --- Functions ---
+function createInternal () {
+    var internal = new game.Internal(game.FRONT_COLOR, game.BACK_COLOR);
+    return internal;
+}
+
+function createEdge (direction) {
+    if (direction == 'left')
+        var color = game.LEFT_COLOR;
+    else if (direction == 'right')
+        var color = game.RIGHT_COLOR;
+    else if (direction == 'up')
+        var color = game.UP_COLOR;
+    else
+        var color = game.DOWN_COLOR;
+    var edge = new game.Edge(color, direction);
+    return edge;
+}
 
 // Drawing Functions
 function render(){
@@ -26,16 +43,22 @@ function drawBackground(color) {
 
 // Testing & Debug Functions
 function testDraw() {
-    game.testInt.draw(50, 50);
-    game.testEdge.draw(50, 50);
+//    game.testInt.draw(50, 50);
+//    game.testEdge.draw(50, 50);
+//    game.testBoard.board[1][1][0].draw(100, 100)
+    game.testBoard.draw(50, 50);
 }
 
 function testInit() {
     game.testInt = new game.Internal('white', 'yellow');
     console.log("game.testInt Initiated");
 
-    game.testEdge = new game.Edge('red', 'up');
+//    game.testEdge = new game.Edge('red', 'up');
+    game.testEdge = createEdge('up');
     console.log("game.testEdge Initiated");
+
+    game.testBoard = new game.RugglesRect(5,4);
+    console.log("game.testBoard Initiated");
 }
 
 // --- Main Loop ---
@@ -65,6 +88,52 @@ window.onload = function() {
 window.game = {};
 
 // --- Objects ---
+
+// Ruggles Rect object
+game.RugglesRect = function (x, y) {
+
+    // Generates x by y gameboard
+    this.generate(x,y);
+
+}
+
+game.RugglesRect.prototype.draw = function(boardX,boardY) {
+
+    
+    for (var i=0; i<this.board.length; i++) {
+        for (var j=0; j<this.board[i].length; j++) {
+            var x = boardX + (game.INTERNAL_WIDTH + game.BOARD_GAP)*j;
+            var y = boardY + (game.INTERNAL_HEIGHT + game.BOARD_GAP)*i;
+            for (var k=0; k<this.board[i][j].length; k++) {
+                this.board[i][j][k].draw(x, y);
+            }
+        }
+    }
+}
+
+game.RugglesRect.prototype.generate = function(x, y) {
+
+    // Initialize board
+    this.board = new Array(y);
+    for (var i=0; i<y; i++) { 
+        this.board[i] = new Array(x);
+        for (var j=0; j<x; j++) {
+            this.board[i][j] = new Array();
+
+            // Add internal pieces
+            this.board[i][j].push(createInternal());
+            // Add edge pieces
+            if (i == 0)
+                this.board[i][j].push(createEdge('up'));
+            if (i == y-1)
+                this.board[i][j].push(createEdge('down'));
+            if (j == 0)
+                this.board[i][j].push(createEdge('left'));
+            if (j == x-1)
+                this.board[i][j].push(createEdge('right'));
+        }
+    }
+}
 
 // Tile object
 game.Tile = function (color) {
@@ -178,6 +247,15 @@ game.INTERNAL_HEIGHT = 40;
 game.EDGE_LENGTH = 40;
 game.EDGE_THICKNESS = 5;
 game.EDGE_PADDING = 10;
+
+game.BOARD_GAP = 5;
+
+game.FRONT_COLOR = 'white';
+game.BACK_COLOR = 'yellow';
+game.UP_COLOR = 'red';
+game.DOWN_COLOR = 'orange';
+game.LEFT_COLOR = 'blue';
+game.RIGHT_COLOR = 'green';
 
 // Game Canvas
 game.canvas = document.getElementById('gameCanvas');
