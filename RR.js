@@ -9,6 +9,25 @@
 
 
 // --- Functions ---
+
+function isInternal (tile) {
+    return tile instanceof game.Internal;
+}
+
+function isEdge (tile) {
+    return tile instanceof game.Edge;
+}
+
+function isHorizEdge (tile) {
+    return isEdge(tile) && (tile.direction == 'left' || 
+                            tile.direction == 'right');
+}
+
+function isVertEdge (tile) {
+    return isEdge(tile) && (tile.direction == 'up' ||
+                            tile.direction == 'down');
+}
+
 function createInternal () {
     var internal = new game.Internal(game.FRONT_COLOR, game.BACK_COLOR);
     return internal;
@@ -53,12 +72,17 @@ function testInit() {
     game.testInt = new game.Internal('white', 'yellow');
     console.log("game.testInt Initiated");
 
-//    game.testEdge = new game.Edge('red', 'up');
-    game.testEdge = createEdge('up');
+    game.testEdge = createEdge('left');
     console.log("game.testEdge Initiated");
 
-    game.testBoard = new game.RugglesRect(5,4);
+    game.testBoard = new game.RugglesRect(5,6);
     console.log("game.testBoard Initiated");
+
+/*
+    game.testBoard.rotColumn(3);
+    game.testBoard.rotColumn(4);
+    game.testBoard.rotRow(4);
+    game.testBoard.rotRow(3);  */
 }
 
 // --- Main Loop ---
@@ -133,6 +157,68 @@ game.RugglesRect.prototype.generate = function(x, y) {
                 this.board[i][j].push(createEdge('right'));
         }
     }
+}
+
+game.RugglesRect.prototype.flipRow = function(y) {
+    
+    // Loop thru every tile in the yth row, flip each internal
+    // and horizontal edge
+    for (var i=0; i<this.board[y].length; i++) {
+        for (var j=0; j<this.board[y][i].length; j++) {
+            if (isInternal(this.board[y][i][j]) ||
+                isHorizEdge(this.board[y][i][j]) )
+                this.board[y][i][j].flip();
+        }
+    }
+}
+
+game.RugglesRect.prototype.flipColumn = function(x) {
+    
+    // Loop thru every tile in the xth column
+    // flip every internal and vertical edge
+    for (var i=0; i<this.board.length; i++) {        
+        for (var j=0; j<this.board[i][x].length; j++) {
+            if (isInternal(this.board[i][x][j]) ||
+                isVertEdge(this.board[i][x][j])  )
+                this.board[i][x][j].flip();
+        }
+    }
+}
+
+game.RugglesRect.prototype.swap = function(x1, y1, x2, y2) {
+    var tileHold = this.board[y1][x1];
+    this.board[y1][x1] = this.board[y2][x2];
+    this.board[y2][x2] = tileHold
+}
+
+game.RugglesRect.prototype.swapColumn = function(x) {
+    // Number of swaps
+    var n = Math.floor(this.board.length/2);
+    var j;
+    for (var i=0; i<n; i++) {
+        j = this.board.length - i - 1;
+        this.swap(x, i, x, j);
+    }
+}
+
+game.RugglesRect.prototype.swapRow = function(y) {
+    // Number of swaps
+    var n = Math.floor(this.board[y].length/2);
+    var j;
+    for (var i=0; i<n; i++) {
+        j = this.board[y].length - i - 1;
+        this.swap(i, y, j, y);
+    }
+}
+
+game.RugglesRect.prototype.rotColumn = function(x) {
+    this.flipColumn(x);
+    this.swapColumn(x);
+}
+
+game.RugglesRect.prototype.rotRow = function(y) {
+    this.flipRow(y);
+    this.swapRow(y);
 }
 
 // Tile object
