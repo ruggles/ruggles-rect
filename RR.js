@@ -46,6 +46,29 @@ function createEdge (direction) {
     return edge;
 }
 
+// Update functions
+function update() {
+    if (game.clicked) {
+        printClick();
+        game.clicked = false;
+    }
+}
+
+function printClick() {
+    console.log("("+game.clickedX+", "+game.clickedY+")");
+}
+
+function updateMouse(event) {
+    game.mouseX = event.clientX;
+    game.mouseY = event.clientY;
+}
+
+function mouseClick(event) {
+    game.clickedX = event.clientX;
+    game.clickedY = event.clientY;
+    game.clicked = true;
+}
+
 // Drawing Functions
 function render(){
     drawBackground(game.BG_COLOR);
@@ -60,12 +83,19 @@ function drawBackground(color) {
     drawRect(color, 0, 0, game.canvas.width, game.canvas.height);
 }
 
+function drawMousePos() {
+    game.canvasContext.font = "12px Arial";
+    game.canvasContext.fillStyle = 'white';
+    game.canvasContext.fillText("(" + game.mouseX + ", " + game.mouseY + ")", game.mouseX, game.mouseY);
+}
+
 // Testing & Debug Functions
 function testDraw() {
 //    game.testInt.draw(50, 50);
 //    game.testEdge.draw(50, 50);
 //    game.testBoard.board[1][1][0].draw(100, 100)
     game.testBoard.draw(50, 50);
+    drawMousePos();
 }
 
 function testInit() {
@@ -92,10 +122,9 @@ function gameLoop() {
     window.requestAnimationFrame( gameLoop );
     //console.log("I am the main loop");
     
-    // --- Input ---
-
-
     // --- Update ---
+    update();
+
 
     // --- Render ---
     render();
@@ -331,8 +360,8 @@ game.INTERNAL_WIDTH = 40;
 game.INTERNAL_HEIGHT = 40;
 
 game.EDGE_LENGTH = 40;
-game.EDGE_THICKNESS = 5;
-game.EDGE_PADDING = 10;
+game.EDGE_THICKNESS = 10;
+game.EDGE_PADDING = 15;
 
 game.BOARD_GAP = 5;
 
@@ -349,8 +378,21 @@ game.canvasContext = game.canvas.getContext('2d');
 
 // Initialize Objects
 
+
+
+
 // Testing
 testInit();
+
+// Grab & update mouse movement
+game.mouseX = 0;
+game.mouseY = 0;
+game.canvas.onmousemove = function() {updateMouse(event)}
+game.clicked = false;
+game.clickedX = 0;
+game.clickedY = 0;
+game.canvas.onclick = function() {mouseClick(event)} 
+
 
 // --- Run Main Loop ---
 
