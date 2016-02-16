@@ -10,6 +10,19 @@
 
 // --- Functions ---
 
+function canvasToTile(canvasX, canvasY, tileI, tileJ) {
+    // Takes canvas coordinates and board position
+    // returns pixel coordinates relative to given tile
+    var x = canvasX - game.BOARD_X - Math.ceil(game.EDGE_PADDING/2) - 
+        (game.INTERNAL_WIDTH + game.BOARD_GAP)*tileI;
+    var y = canvasY - game.BOARD_Y - Math.ceil(game.EDGE_PADDING/2) - 
+        (game.INTERNAL_HEIGHT + game.BOARD_GAP)*tileJ;
+    return {
+        x: x,
+        y: y
+    };
+}
+
 function isInternal (tile) {
     return tile instanceof game.Internal;
 }
@@ -49,8 +62,9 @@ function createEdge (direction) {
 // Update functions
 function update() {
     if (game.clicked) {
-        printClick();
         game.clicked = false;
+        printClick();
+        game.RugRect.collide(game.clickedX, game.clickedY);
     }
 }
 
@@ -72,6 +86,7 @@ function mouseClick(event) {
 // Drawing Functions
 function render(){
     drawBackground(game.BG_COLOR);
+    game.RugRect.draw(game.BOARD_X, game.BOARD_Y);
 }
 
 function drawRect(color, x, y, width, height) {
@@ -91,10 +106,7 @@ function drawMousePos() {
 
 // Testing & Debug Functions
 function testDraw() {
-//    game.testInt.draw(50, 50);
-//    game.testEdge.draw(50, 50);
-//    game.testBoard.board[1][1][0].draw(100, 100)
-    game.testBoard.draw(50, 50);
+//    game.testBoard.draw(50, 50);
     drawMousePos();
 }
 
@@ -250,6 +262,26 @@ game.RugglesRect.prototype.rotRow = function(y) {
     this.swapRow(y);
 }
 
+game.RugglesRect.prototype.collide = function(canvasX, canvasY) {
+
+    var tileCoord;
+    // Loop through every board position
+    for (var i=0; i<this.board.length; i++) {
+        for (var j=0; j<this.board[i].length; j++) {
+            tileCoord = canvasToTile(canvasX, canvasY, j, i);
+            //console.log("("+tileCoord.x+", "+tileCoord.y+")");
+            
+            // Loop thru every tile in each space
+            for (var k=0; k<this.board[i][j].length; k++) {
+                if (this.board[i][j][k].collide(tileCoord.x, tileCoord.y)) {
+                    console.log("("+j+", "+i+")");
+                }
+            }
+
+        }
+    }
+}
+
 // Tile object
 game.Tile = function (color) {
     this.color = color;
@@ -257,14 +289,21 @@ game.Tile = function (color) {
 };
 
 game.Tile.prototype.draw = function (canvasX,canvasY) {
-    var x = canvasX - this.rect.x;
-    var y = canvasY - this.rect.y;
+    var x = canvasX + this.rect.x;
+    var y = canvasY + this.rect.y;
     drawRect(this.color, x, y, this.rect.width, this.rect.height);
 }
 
 game.Tile.prototype.collide = function (relX, relY) {
-    // Currently a placeholder, will add later
     // Returns true if relX, relY within rect
+    if (relX >= this.rect.x  &&
+        relX <= this.rect.x + this.rect.width) {
+        if (relY >= this.rect.y &&
+            relY <= this.rect.y + this.rect.height) {
+            return true;
+        }
+    }
+    return false;
 }
 
 // Internal object - child of Tile
@@ -309,9 +348,9 @@ game.Edge.prototype.buildRect = function() {
         var height = game.EDGE_LENGTH;
         var adjY = 0;
         if (this.direction == 'left') {
-            var adjX = (game.INTERNAL_WIDTH/2 + game.EDGE_PADDING);
-        } else {
             var adjX = -(game.INTERNAL_WIDTH/2 + game.EDGE_PADDING);
+        } else {
+            var adjX = +(game.INTERNAL_WIDTH/2 + game.EDGE_PADDING);
         }
 
     }
@@ -320,17 +359,17 @@ game.Edge.prototype.buildRect = function() {
         var width = game.EDGE_LENGTH;
         var adjX = 0;
         if (this.direction == 'up') {
-            var adjY = (game.INTERNAL_HEIGHT/2 + game.EDGE_PADDING);
-        } else {
             var adjY = -(game.INTERNAL_HEIGHT/2 + game.EDGE_PADDING);
+        } else {
+            var adjY = +(game.INTERNAL_HEIGHT/2 + game.EDGE_PADDING);
         }
     }
  
-    var centerX = -game.INTERNAL_WIDTH/2;
-    var centerY = -game.INTERNAL_HEIGHT/2;
+    var centerX = game.INTERNAL_WIDTH/2;
+    var centerY = game.INTERNAL_HEIGHT/2;
 
-    var x = centerX + width/2 + adjX;
-    var y = centerY + height/2 + adjY;
+    var x = centerX - width/2 + adjX;
+    var y = centerY - height/2 + adjY;
 
     this.rect = {
         x: x,
@@ -353,13 +392,14 @@ game.Edge.prototype.flip = function() {
     this.buildRect();
 }
 
-// --- Initialize variables ---
+// --- Initialize Variables ---
 game.BG_COLOR = 'black';
 
-game.INTERNAL_WIDTH = 40;
-game.INTERNAL_HEIGHT = 40;
+game.INTERNAL_SIZE = 40;
+game.INTERNAL_WIDTH = game.INTERNAL_SIZE;
+game.INTERNAL_HEIGHT = game.INTERNAL_SIZE;
 
-game.EDGE_LENGTH = 40;
+game.EDGE_LENGTH = game.INTERNAL_SIZE;
 game.EDGE_THICKNESS = 10;
 game.EDGE_PADDING = 15;
 
@@ -372,17 +412,20 @@ game.DOWN_COLOR = 'orange';
 game.LEFT_COLOR = 'blue';
 game.RIGHT_COLOR = 'green';
 
+game.BOARD_X = 200;
+game.BOARD_Y = 200;
+
 // Game Canvas
 game.canvas = document.getElementById('gameCanvas');
 game.canvasContext = game.canvas.getContext('2d');
 
 // Initialize Objects
-
+game.RugRect = new game.RugglesRect(5,5);
 
 
 
 // Testing
-testInit();
+//testInit();
 
 // Grab & update mouse movement
 game.mouseX = 0;
