@@ -61,11 +61,34 @@ function createEdge (direction) {
 
 // Update functions
 function update() {
+
     if (game.clicked) {
         game.clicked = false;
-        printClick();
-        game.RugRect.collide(game.clickedX, game.clickedY);
+
+        //printClick()
+        var collision = game.RugRect.collide(game.clickedX, game.clickedY);
+        if (collision)
+            rotRect(collision);
     }
+
+}
+
+function rotRect(collision) {
+    var x = collision.x;
+    var y = collision.y;
+    var tile = collision.tile;
+
+    if (tile instanceof game.Edge) {
+        if (tile.direction == 'up' ||
+            tile.direction == 'down') {
+            game.RugRect.rotColumn(x);
+        }       
+        if (tile.direction == 'left' ||
+            tile.direction == 'right') {
+            game.RugRect.rotRow(y);
+        }
+    }
+    
 }
 
 function printClick() {
@@ -274,12 +297,15 @@ game.RugglesRect.prototype.collide = function(canvasX, canvasY) {
             // Loop thru every tile in each space
             for (var k=0; k<this.board[i][j].length; k++) {
                 if (this.board[i][j][k].collide(tileCoord.x, tileCoord.y)) {
-                    console.log("("+j+", "+i+")");
+                    // console.log("("+j+", "+i+")");
+                    // Return piece type, along with board coordinates
+                    var collision = {x: j, y: i, tile: this.board[i][j][k]};
+                    return collision;
                 }
             }
-
         }
     }
+    return null;
 }
 
 // Tile object
