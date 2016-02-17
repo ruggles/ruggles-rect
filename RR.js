@@ -10,6 +10,7 @@
 
 // --- Functions ---
 
+
 function canvasToTile(canvasX, canvasY, tileI, tileJ) {
     // Takes canvas coordinates and board position
     // returns pixel coordinates relative to given tile
@@ -308,6 +309,24 @@ game.RugglesRect.prototype.collide = function(canvasX, canvasY) {
     return null;
 }
 
+game.RugglesRect.prototype.randomMove = function() {
+    var coinFlip = Math.random();
+    if (coinFlip > 0.5) {
+        var randomRow = Math.floor(Math.random() * this.board.length);
+        this.rotRow(randomRow);
+    }
+    else {
+        var randomColumn = Math.floor(Math.random() * this.board[0].length);
+        this.rotColumn(randomColumn);
+    }
+}
+
+game.RugglesRect.prototype.randomizeBoard = function(moves) {
+    for (var i=0; i<moves; i++)
+        this.randomMove();
+}
+
+
 // Tile object
 game.Tile = function (color) {
     this.color = color;
@@ -421,13 +440,13 @@ game.Edge.prototype.flip = function() {
 // --- Initialize Variables ---
 game.BG_COLOR = 'black';
 
-game.INTERNAL_SIZE = 40;
+game.INTERNAL_SIZE = 50;
 game.INTERNAL_WIDTH = game.INTERNAL_SIZE;
 game.INTERNAL_HEIGHT = game.INTERNAL_SIZE;
 
 game.EDGE_LENGTH = game.INTERNAL_SIZE;
-game.EDGE_THICKNESS = 10;
-game.EDGE_PADDING = 15;
+game.EDGE_THICKNESS = 30;
+game.EDGE_PADDING = 20;
 
 game.BOARD_GAP = 5;
 
@@ -439,15 +458,15 @@ game.LEFT_COLOR = 'blue';
 game.RIGHT_COLOR = 'green';
 
 game.BOARD_X = 200;
-game.BOARD_Y = 200;
+game.BOARD_Y = 150;
 
 // Game Canvas
 game.canvas = document.getElementById('gameCanvas');
 game.canvasContext = game.canvas.getContext('2d');
 
 // Initialize Objects
-game.RugRect = new game.RugglesRect(5,5);
-
+game.RugRect = new game.RugglesRect(3,4);
+game.RugRect.randomizeBoard(50);
 
 
 // Testing
