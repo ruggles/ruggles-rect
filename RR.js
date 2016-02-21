@@ -10,6 +10,19 @@
 
 // --- Functions ---
 
+function randomizeBoard() {
+    var randomInput = document.getElementById('random-moves');
+
+    game.RugRect.randomizeBoard(randomInput.value);
+
+}
+
+function generateBoard() {
+    var heightInput = document.getElementById('generate-height');
+    var widthInput = document.getElementById('generate-width');
+
+    game.RugRect = new game.RugglesRect(widthInput.value, heightInput.value);
+}
 
 function canvasToTile(canvasX, canvasY, tileI, tileJ) {
     // Takes canvas coordinates and board position
@@ -480,6 +493,10 @@ game.BOARD_Y = 150;
 game.canvas = document.getElementById('gameCanvas');
 game.canvasContext = game.canvas.getContext('2d');
 
+// HTML Forms
+game.generateButton = document.getElementById('generate-button');
+game.randomizeButton = document.getElementById('randomize-button');
+
 // Initialize Objects
 game.RugRect = new game.RugglesRect(3, 3);
 game.RugRect.randomizeBoard(50);
@@ -492,11 +509,17 @@ game.RugRect.randomizeBoard(50);
 game.mouseX = 0;
 game.mouseY = 0;
 game.canvas.onmousemove = function() {updateMouse(event)}
+
 game.clicked = false;
 game.clickedX = 0;
 game.clickedY = 0;
 game.canvas.onclick = function() {mouseClick(event)} 
 
+// Grab form input
+game.generateButton.onclick = function() {generateBoard()};
+game.randomizeButton.onclick = function() {randomizeBoard()};
+
+// Insert html event listeners
 
 // --- Run Main Loop ---
 
