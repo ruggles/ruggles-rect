@@ -13,15 +13,38 @@
 function randomizeBoard() {
     var randomInput = document.getElementById('random-moves');
 
-    game.RugRect.randomizeBoard(randomInput.value);
+    // Force natural number
+    var moves = Math.floor(randomInput.value);
+    if (moves<1)
+        moves = 1;
+    
+    // Set form value to corrected version
+    randomInput.value = moves;
+
+    game.RugRect.randomizeBoard(moves);
 
 }
 
 function generateBoard() {
     var heightInput = document.getElementById('generate-height');
     var widthInput = document.getElementById('generate-width');
+    
+    // Force height/width to be integers
+    var y = Math.floor(heightInput.value);
+    var x = Math.floor(widthInput.value);
 
-    game.RugRect = new game.RugglesRect(widthInput.value, heightInput.value);
+    // Force height/width to be greater than zero
+    if (y<1)
+        y = 1;
+    if (x<1)
+        x = 1;
+
+    // Set form values to corrected height width
+    // This suggests to user that these are allowed values
+    heightInput.value = y;
+    widthInput.value = x;
+
+    game.RugRect = new game.RugglesRect(x, y);
 }
 
 function canvasToTile(canvasX, canvasY, tileI, tileJ) {
