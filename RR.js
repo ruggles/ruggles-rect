@@ -14,10 +14,12 @@
 function canvasToTile(canvasX, canvasY, tileI, tileJ) {
     // Takes canvas coordinates and board position
     // returns pixel coordinates relative to given tile
-    var x = canvasX - game.BOARD_X - Math.ceil(game.EDGE_PADDING/2) - 
+
+    var x = canvasX - game.BOARD_X - 
         (game.INTERNAL_WIDTH + game.BOARD_GAP)*tileI;
-    var y = canvasY - game.BOARD_Y - Math.ceil(game.EDGE_PADDING/2) - 
+    var y = canvasY - game.BOARD_Y -  
         (game.INTERNAL_HEIGHT + game.BOARD_GAP)*tileJ;
+
     return {
         x: x,
         y: y
@@ -96,14 +98,28 @@ function printClick() {
     console.log("("+game.clickedX+", "+game.clickedY+")");
 }
 
+function getMouseCoords(event) {
+    var rect = game.canvas.getBoundingClientRect();
+    var root = document.documentElement;
+
+    var mouseX = event.clientX - rect.left - root.scrollLeft;
+    var mouseY = event.clientY - rect.top - root.scrollTop;
+
+    var mousePos = {x: mouseX, y: mouseY};
+
+    return mousePos
+}
+
 function updateMouse(event) {
-    game.mouseX = event.clientX;
-    game.mouseY = event.clientY;
+    var mousePos = getMouseCoords(event);
+    game.mouseX = mousePos.x
+    game.mouseY = mousePos.y
 }
 
 function mouseClick(event) {
-    game.clickedX = event.clientX;
-    game.clickedY = event.clientY;
+    var mousePos = getMouseCoords(event);
+    game.clickedX = mousePos.x;
+    game.clickedY = mousePos.y;
     game.clicked = true;
 }
 
@@ -465,7 +481,7 @@ game.canvas = document.getElementById('gameCanvas');
 game.canvasContext = game.canvas.getContext('2d');
 
 // Initialize Objects
-game.RugRect = new game.RugglesRect(3,4);
+game.RugRect = new game.RugglesRect(3, 3);
 game.RugRect.randomizeBoard(50);
 
 
