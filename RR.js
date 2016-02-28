@@ -141,7 +141,9 @@ function getMouseCoords(event) {
     var mouseX = event.clientX - rect.left - root.scrollLeft;
     var mouseY = event.clientY - rect.top - root.scrollTop;
 
-    var mousePos = {x: mouseX, y: mouseY};
+    var scale = game.scaleFactor;
+
+    var mousePos = {x: mouseX/scale, y: mouseY/scale};
 
     return mousePos
 }
@@ -161,6 +163,11 @@ function mouseClick(event) {
 
 // Drawing Functions
 function render(){
+
+    game.scaleFactor = getScaleFactor();
+    console.log(game.scaleFactor);
+    game.canvasContext.scale(game.scaleFactor, game.scaleFactor);
+
     drawBackground(game.BG_COLOR);
     game.RugRect.draw(game.BOARD_X, game.BOARD_Y);
 }
@@ -171,13 +178,48 @@ function drawRect(color, x, y, width, height) {
 }
 
 function drawBackground(color) {
-    drawRect(color, 0, 0, game.canvas.width, game.canvas.height);
+    var scale = game.scaleFactor;
+    drawRect(color, 0, 0, game.canvas.width/scale, game.canvas.height/scale);
 }
 
 function drawMousePos() {
     game.canvasContext.font = "12px Arial";
     game.canvasContext.fillStyle = 'white';
     game.canvasContext.fillText("(" + game.mouseX + ", " + game.mouseY + ")", game.mouseX, game.mouseY);
+}
+
+function positionCube() {
+    game.BOARD_X = game.INTERNAL_SIZE;
+    game.BOARD_Y = game.INTERNAL_SIZE;
+}
+
+function resizeCanvas() {
+    game.canvas.width = window.innerWidth;
+    game.canvas.height = window.innerHeight*4/5;
+}
+
+function getScaleFactor() {
+
+    // Calculate unscaled cube size
+    var numCols = game.RugRect.board[0].length;
+    var sizeX = (game.INTERNAL_SIZE + game.BOARD_GAP)*numCols - game.BOARD_GAP;
+
+    var numRows = game.RugRect.board.length;
+    var sizeY = (game.INTERNAL_SIZE + game.BOARD_GAP)*numRows - game.BOARD_GAP;
+
+    // Calculate ratio of size to fillable canvas
+    var filledCanvasX = game.canvas.width - 4*game.INTERNAL_SIZE;
+    var filledCanvasY = game.canvas.height - 4*game.INTERNAL_SIZE;
+
+    var ratioX = filledCanvasX/sizeX;
+    var ratioY = filledCanvasY/sizeY;
+
+    //console.log("("+ratioX+", "+ratioY+")");
+   
+    // The minimum of the two ratios is the scale factor.
+    var scaleFactor = Math.min(ratioX, ratioY);
+
+    return scaleFactor
 }
 
 // Testing & Debug Functions
@@ -215,6 +257,8 @@ function gameLoop() {
 
 
     // --- Render ---
+    resizeCanvas();
+    positionCube();
     render();
 
 
@@ -509,12 +553,19 @@ game.DOWN_COLOR = 'orange';
 game.LEFT_COLOR = 'blue';
 game.RIGHT_COLOR = 'green';
 
-game.BOARD_X = 200;
-game.BOARD_Y = 150;
+game.scaleFactor = 1;
 
 // Game Canvas
 game.canvas = document.getElementById('gameCanvas');
 game.canvasContext = game.canvas.getContext('2d');
+game.canvas.width = window.innerWidth;
+game.canvas.height = window.innerHeight*2/3;
+
+game.BOARD_EDGE_DIST = 0.15;
+
+positionCube();
+
+//game.canvasContext.scale(1.5, 1.5);
 
 // HTML Forms
 game.generateButton = document.getElementById('generate-button');
