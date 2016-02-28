@@ -165,7 +165,7 @@ function mouseClick(event) {
 function render(){
 
     game.scaleFactor = getScaleFactor();
-    console.log(game.scaleFactor);
+    //console.log(game.scaleFactor);
     game.canvasContext.scale(game.scaleFactor, game.scaleFactor);
 
     drawBackground(game.BG_COLOR);
@@ -184,8 +184,8 @@ function drawBackground(color) {
 
 function drawMousePos() {
     game.canvasContext.font = "12px Arial";
-    game.canvasContext.fillStyle = 'white';
-    game.canvasContext.fillText("(" + game.mouseX + ", " + game.mouseY + ")", game.mouseX, game.mouseY);
+    game.canvasContext.fillStyle = 'purple';
+    game.canvasContext.fillText("(" + Math.floor(game.mouseX) + ", " + Math.floor(game.mouseY) + ")", game.mouseX, game.mouseY);
 }
 
 function positionCube() {
@@ -202,14 +202,16 @@ function getScaleFactor() {
 
     // Calculate unscaled cube size
     var numCols = game.RugRect.board[0].length;
-    var sizeX = (game.INTERNAL_SIZE + game.BOARD_GAP)*numCols - game.BOARD_GAP;
+    var sizeX = (game.INTERNAL_SIZE + game.BOARD_GAP)*(numCols + 1) + 2*game.EDGE_LENGTH;
 
     var numRows = game.RugRect.board.length;
-    var sizeY = (game.INTERNAL_SIZE + game.BOARD_GAP)*numRows - game.BOARD_GAP;
+    var sizeY = (game.INTERNAL_SIZE + game.BOARD_GAP)*(numRows + 1)  + 2*game.EDGE_LENGTH;
+
+    //console.log(sizeY);
 
     // Calculate ratio of size to fillable canvas
-    var filledCanvasX = game.canvas.width - 4*game.INTERNAL_SIZE;
-    var filledCanvasY = game.canvas.height - 4*game.INTERNAL_SIZE;
+    var filledCanvasX = (game.canvas.width)*1;
+    var filledCanvasY = (game.canvas.height)*1;
 
     var ratioX = filledCanvasX/sizeX;
     var ratioY = filledCanvasY/sizeY;
