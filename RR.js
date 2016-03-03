@@ -194,8 +194,8 @@ function positionCube() {
 }
 
 function resizeCanvas() {
-    game.canvas.width = window.innerWidth;
-    game.canvas.height = window.innerHeight*4/5;
+    game.canvas.width = window.innerWidth*9/10;
+    game.canvas.height = window.innerHeight*7/10;
 }
 
 function getScaleFactor() {
@@ -265,7 +265,7 @@ function gameLoop() {
 
 
     // Testing
-    testDraw();
+    //testDraw();
 }
 
 //  --- window.onload ---
@@ -560,8 +560,7 @@ game.scaleFactor = 1;
 // Game Canvas
 game.canvas = document.getElementById('gameCanvas');
 game.canvasContext = game.canvas.getContext('2d');
-game.canvas.width = window.innerWidth;
-game.canvas.height = window.innerHeight*2/3;
+resizeCanvas();
 
 game.BOARD_EDGE_DIST = 0.15;
 

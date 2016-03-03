@@ -3,26 +3,54 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Ruggles Rect</title>
+    <title>Rubik's 2D</title>
     <script src="RR.js"></script>
-    <style> 
-    body {
+    <link rel="stylesheet" href="style.css">
     
-        -moz-user-select: none;
-        -webkit-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
+<style> 
+body {
 
-    }
-    
-    
-    </style>
-</head>
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+
+#canvas-container { 
+    width: 100%; 
+    text-align: center; 
+} 
+ 
+canvas { 
+    display: inline; 
+} 
+
+</style>
+
+    </head>
 
 <body>
 
-<canvas id="gameCanvas" width="600" height="500"></canvas>
+<div class="header">
+    <h2>Rubik's 2d</h2>
+</div>
 
+<div class="divider">
+</div>
+
+<div class="description">
+    <p>
+    Just a little tool that lets you build and mess around with a 1xnxm rubik's cube.
+    </p>
+</div>
+
+<div id="canvas-container">
+<canvas id="gameCanvas" width="400" height="400"></canvas>
+</div>
+
+<div class="description">
 
 <form id="input-form">
 
@@ -33,13 +61,22 @@
     </p>
     
     <p>
-    Number of Moves <input id='random-moves' type='number' value='50' min='1'>
+    Number of Moves <input id='random-moves' type='number' value='50' min='1' max='50000'>
     <button id="randomize-button" type="button">randomize</button>
     </p>
 
 
 </form>
 
+</div>
+
+<div class="divider">
+</div>
+
+<div class ="footer">
+    Website by me,
+    Font by <a href="http://www.somepx.com/">Somepx<a>
+</div>
 
 </body>
 
