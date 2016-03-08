@@ -134,12 +134,12 @@ function printClick() {
     console.log("("+game.clickedX+", "+game.clickedY+")");
 }
 
-function getMouseCoords(event) {
+function getMouseCoords(evt) {
     var rect = game.canvas.getBoundingClientRect();
     var root = document.documentElement;
 
-    var mouseX = event.clientX - rect.left - root.scrollLeft;
-    var mouseY = event.clientY - rect.top - root.scrollTop;
+    var mouseX = evt.clientX - rect.left - root.scrollLeft;
+    var mouseY = evt.clientY - rect.top - root.scrollTop;
 
     var scale = game.scaleFactor;
 
@@ -148,14 +148,14 @@ function getMouseCoords(event) {
     return mousePos
 }
 
-function updateMouse(event) {
-    var mousePos = getMouseCoords(event);
+function updateMouse(evt) {
+    var mousePos = getMouseCoords(evt);
     game.mouseX = mousePos.x
     game.mouseY = mousePos.y
 }
 
-function mouseClick(event) {
-    var mousePos = getMouseCoords(event);
+function mouseClick(evt) {
+    var mousePos = getMouseCoords(evt);
     game.clickedX = mousePos.x;
     game.clickedY = mousePos.y;
     game.clicked = true;
@@ -583,12 +583,12 @@ game.RugRect.randomizeBoard(50);
 // Grab & update mouse movement
 game.mouseX = 0;
 game.mouseY = 0;
-game.canvas.onmousemove = function() {updateMouse(event)}
+game.canvas.onmousemove = function(evt) {updateMouse(evt)};
 
 game.clicked = false;
 game.clickedX = 0;
 game.clickedY = 0;
-game.canvas.onclick = function() {mouseClick(event)} 
+game.canvas.onclick = function(evt) {mouseClick(evt)}; 
 
 // Grab form input
 game.generateButton.onclick = function() {generateBoard()};
