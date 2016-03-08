@@ -136,14 +136,18 @@ function printClick() {
 
 function getMouseCoords(evt) {
     var rect = game.canvas.getBoundingClientRect();
-    var root = document.documentElement;
+    //var root = document.documentElement;
 
-    var mouseX = evt.clientX - rect.left - root.scrollLeft;
-    var mouseY = evt.clientY - rect.top - root.scrollTop;
+    var mouseX = evt.clientX - rect.left;
+    var mouseY = evt.clientY - rect.top;
 
     var scale = game.scaleFactor;
 
     var mousePos = {x: mouseX/scale, y: mouseY/scale};
+
+    //console.log("event coords: ("+evt.clientX+", "+evt.clientY+")");
+    //console.log("window coords: ("+rect.left+", "+rect.top+")");
+    //console.log("scroll offset: ("+root.scrollLeft+", "+root.scrollTop+")");
 
     return mousePos
 }
@@ -265,7 +269,7 @@ function gameLoop() {
 
 
     // Testing
-    //testDraw();
+    testDraw();
 }
 
 //  --- window.onload ---
